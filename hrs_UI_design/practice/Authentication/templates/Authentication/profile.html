@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            background: #4e54c8;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-card {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .profile-card h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 22px;
+        }
+
+        .profile-info div {
+            margin: 8px 0;
+            font-size: 15px;
+            color: #444;
+        }
+
+        .profile-info div span {
+            font-weight: 600;
+            color: #111;
+        }
+
+        .button-group {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-back {
+            background-color: #4e54c8;
+            color: white;
+        }
+
+        .btn-back:hover {
+            background-color: #3a40a5;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        form {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    {% include 'header.html' %}
+    {% include 'sidebar.html' %}
+
+    <div class="main">
+        <div class="profile-card">
+            <h2>User Profile</h2>
+            <div class="profile-info">
+                <div><span>First Name:</span> {{ user.first_name }}</div>
+                <div><span>Last Name:</span> {{ user.last_name }}</div>
+                <div><span>Username:</span> {{ user.username }}</div>
+                <div><span>Email:</span> {{ user.email }}</div>
+                <div><span>Phone Number:</span> {{ profile.phone_num }}</div>
+                <div><span>Role:</span> {{ profile.role }}</div>
+            </div>
+            <div class="button-group">
+                <a href="{% url 'home' %}" class="btn btn-back">Back to Dashboard</a>
+                <form method="POST" action="{% url 'delete_profile' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete your profile?')">Delete Profile</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

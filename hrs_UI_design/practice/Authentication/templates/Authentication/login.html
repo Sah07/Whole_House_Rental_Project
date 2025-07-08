@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login Page</title>
+  <link rel="stylesheet" href="/static/css/login.css">
+</head>
+<body>
+  {% include "header.html" %}
+
+  <div class="main">
+    <div class="login-container">
+      <h2>Log in to access your account</h2>
+
+      <!-- ✅ Show only relevant messages (login-related) -->
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            {% if "login" in message.message|lower or "verify" in message.message|lower or "password" in message.message|lower %}
+              <li class="{% if message.tags %}{{ message.tags }}{% endif %}" style="color: red;">
+                {{ message }}
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <form method="POST" action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" class="login-form">
+        {% csrf_token %}
+        <input type="email" name="email" placeholder="Email" required value="{{ request.POST.email }}">
+        <input type="password" name="password" placeholder="Password" required id="password">
+
+        <label class="show-password-label">
+          <input type="checkbox" id="show-password"> Show password
+        </label>
+        <a href="{% url 'password_reset' %}">Forgot Password?</a>
+
+        <button type="submit">Login</button>
+      </form>
+      <p class="signup">
+        Don't have an account? <a href="{% url 'signup' %}">Signup</a>
+      </p>
+    </div>
+  </div>
+  <script src="/static/script/login.js"></script>
+
+</body>
+</html>
+

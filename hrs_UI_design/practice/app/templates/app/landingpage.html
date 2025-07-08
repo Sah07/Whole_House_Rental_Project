@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - www.codingnepalweb.com -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>House Rental System</title>
+    <link rel="stylesheet" href="/static/css/landingpage.css" />
+  </head>
+  <body>
+    {% include "header.html" %}
+    <section class="main-section">
+      <div class="intro-content">
+        <h2>House Rental System</h2>
+        <p>
+            Find your perfect home with ease! Discover, compare, and rent verified houses and rooms through our smart and user-friendly platform. Simplify your rental journey—anytime, anywhere.
+        </p>
+        {% if request.user.is_authenticated %}
+        <div class="buttons">
+          <a href="/home" class="join">Explore Now</a>
+        </div>
+        {%else%}
+        <div class="buttons">
+          <a href="/signup" class="join">Explore Now</a>
+        </div>
+        {% endif %}
+
+      </div>
+      <div class="img">
+        <img id="slideshow-image" src="/static/img/room.jpg" alt="room image" />
+      </div>
+    </section>
+
+    <script>
+        const images = ["/static/img/room.jpg", "/static/img/house2.jpg", "/static/img/house3.jpg"];
+        let index = 0;
+
+        setInterval(() => {
+            index = (index + 1) % images.length;
+            document.getElementById("slideshow-image").src = images[index];
+        }, 3000); // Change image every 3 seconds
+    </script>
+
+  </body>
+</html>

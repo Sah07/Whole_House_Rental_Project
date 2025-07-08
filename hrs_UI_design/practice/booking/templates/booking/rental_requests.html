@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Booking Details</title>
+    <style>
+      /* Your existing CSS */
+      * {
+        font-family: "Open Sans", sans-serif;
+      }
+      .main-content {
+        margin-top: 100px;
+        margin-left: 100px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        min-height: 100vh;
+        overflow-x: auto;
+      }
+      .sidebar.open ~ .main-content {
+        margin-left: 220px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-family: "Open Sans", sans-serif;
+        min-width: 600px;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 10px 15px;
+        text-align: left;
+        white-space: nowrap;
+        vertical-align: top;
+      }
+      th {
+        background-color: #4CAF50;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      tr:hover {
+        background-color: #f1f1f1;
+      }
+      caption {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+      /* Responsive styles */
+      @media screen and (max-width: 600px) {
+        table, thead, tbody, th, td, tr {
+          display: block;
+        }
+        thead {
+          display: none;
+        }
+        tr {
+          margin-bottom: 15px;
+          background-color: #fff;
+          border: 1px solid #ccc;
+          padding: 10px;
+        }
+        td {
+          border: none;
+          position: relative;
+          padding-left: 50%;
+          white-space: normal; /* allow wrapping */
+        }
+        td::before {
+          content: attr(data-label);
+          position: absolute;
+          left: 15px;
+          top: 10px;
+          font-weight: bold;
+          white-space: nowrap;
+        }
+      }
+      /* Show more styles */
+      .note-short {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .show-more-btn {
+        cursor: pointer;
+        color: #007BFF;
+        text-decoration: underline;
+        margin-left: 5px;
+        font-size: 0.9em;
+        vertical-align: middle;
+      }
+    </style>
+</head>
+<body>
+  {% include "header.html" %}
+  {% include "sidebar.html" %}
+  <div class="main-content">
+    <table>
+      <caption>Rental Requests</caption>
+      <thead>
+        <tr>
+          <th>Tenant Name</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Requested At</th>
+          <th>Note</th>
+          <th>Actions</th>
+          <th>View</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for booking in bookings %}
+          <tr>
+            <td data-label="Tenant Name">{{ booking.tenant.username }}</td>
+            <td data-label="Email">{{ booking.tenant.email }}</td>
+            <td data-label="Status">{{ booking.status }}</td>
+            <td data-label="Requested At">{{ booking.requested_at|date:"M d, Y H:i" }}</td>
+            <td data-label="Note">
+              {% if booking.note %}
+                {% if booking.note|length > 50 %}
+                  <span class="note-short" id="note-short-{{ booking.id }}">{{ booking.note|slice:":50" }}...</span>
+                  <span class="note-full" id="note-full-{{ booking.id }}" style="display:none;">{{ booking.note }}</span>
+                  <span class="show-more-btn" onclick="toggleNote({{ booking.id }})" id="btn-{{ booking.id }}">Show more</span>
+                {% else %}
+                  {{ booking.note }}
+                {% endif %}
+              {% else %}
+                No note
+              {% endif %}
+            </td>
+            <td data-label="Actions">
+              {% if booking.status == 'Pending' %}
+                <a href="{% url 'booking_approve' booking.id %}" style="color:green; margin-right:10px;">Approve</a>
+                <a href="{% url 'booking_reject' booking.id %}" style="color:red;">Reject</a>
+              {% else %}
+                No actions
+              {% endif %}
+            </td>
+            
+            <td><a style="text-decoration:none; cursor:pointer;" href="{% url 'property_detail' booking.property.pk %}">Property</a> pid={{booking.property.id}}</td>
+            
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6">No bookings found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function toggleNote(id) {
+      const shortSpan = document.getElementById('note-short-' + id);
+      const fullSpan = document.getElementById('note-full-' + id);
+      const btn = document.getElementById('btn-' + id);
+
+      if (shortSpan.style.display === 'none') {
+        shortSpan.style.display = 'inline';
+        fullSpan.style.display = 'none';
+        btn.textContent = 'Show more';
+      } else {
+        shortSpan.style.display = 'none';
+        fullSpan.style.display = 'inline';
+        btn.textContent = 'Show less';
+      }
+    }
+  </script>
+</body>
+</html>

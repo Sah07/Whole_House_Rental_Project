@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Explore Nepali Houses</h1>
+    <p>Browse available houses for rent across Nepal with detailed descriptions, pricing, and photos.</p>
+  </section>
+
+  <!-- Search Section -->
+  <section class="search-section">
+    <form method="GET" class="search-form">
+      <input type="text" name="city" placeholder="Enter City" value="{{ request.GET.city }}">
+      <input type="text" name="area" placeholder="Enter Area of the city" value="{{ request.GET.area }}">
+      <select name="property_type">
+        <option value="">Any Type</option>
+        <option value="Apartment">Apartment</option>
+        <option value="Room">Room</option>
+      </select>
+
+      <input type="number" name="bedrooms" min="0" placeholder="Min Bedrooms" value="{{ request.GET.bedrooms }}">
+      <input type="number" name="bathrooms" min="0" placeholder="Min Bathrooms" value="{{ request.GET.bathrooms }}">
+
+      <select name="furnished">
+        <option value="">Furnished?</option>
+        <option value="true" {% if request.GET.furnished == 'true' %}selected{% endif %}>Yes</option>
+        <option value="false" {% if request.GET.furnished == 'false' %}selected{% endif %}>No</option>
+      </select>
+
+      <input type="number" name="max_rent" step="0.01" placeholder="Max Rent (Rs)" value="{{ request.GET.max_rent }}">
+      
+      <button type="submit">Search</button>
+    </form>
+  </section>
+
+  <!-- Houses Grid -->
+  <div class="houses-grid">
+    {% for property in page_obj %}
+      <a href="{% url 'property_detail' property.pk %}" class="house-card-link">
+        <div class="house-card">
+          {% if property.image %}
+            <img src="{{ property.image.url }}" alt="{{ property.title }}" class="house-image">
+          {% else %}
+            <img src="{% static 'img/default-house.jpg' %}" alt="No Image Available" class="house-image">
+          {% endif %}
+          <div class="house-details">
+            <h3 class="house-name">{{ property.title }}</h3>
+            <p class="house-location">{{ property.address }}, {{ property.city }}</p>
+            <p class="house-price">Rs. {{ property.monthly_rent }} / month</p>
+            <p class="house-desc">
+              {{ property.bedrooms }} BR, {{ property.bathrooms }} Bath
+              {% if property.furnished %}- Furnished{% else %}- Unfurnished{% endif %}
+            </p>
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      <p style="text-align:center;">No properties available at the moment 🏡</p>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="pagination">
+    {% with page_number_str=page_obj.number|stringformat:"s" %}
+    {% with cleaned_query=request.GET.urlencode|cut:'page='|cut:page_number_str %}
+      {% if page_obj.has_previous %}
+        <a href="?{% if cleaned_query %}{{ cleaned_query }}&{% endif %}page=1">First</a>
+        <a href="?{% if cleaned_query %}{{ cleaned_query }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
+  
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  
+      {% if page_obj.has_next %}
+        <a href="?{% if cleaned_query %}{{ cleaned_query }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+        <a href="?{% if cleaned_query %}{{ cleaned_query }}&{% endif %}page={{ page_obj.paginator.num_pages }}">Last</a>
+      {% endif %}
+    {% endwith %}
+  {% endwith %}
+  
+  </div>
+{% endblock %}

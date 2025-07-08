@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}My Site{% endblock %}</title>
+
+  <!-- Global stylesheet -->
+  <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
+
+  <!-- Optional page-specific CSS block -->
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  {% include "header.html" %}
+  {% include "sidebar.html" %}
+
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Optional page-specific JS block -->
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

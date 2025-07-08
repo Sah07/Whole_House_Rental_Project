@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Property Detail</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body {
+      background-color: #2c3e50;
+      font-family: "Open Sans", sans-serif;
+    }
+
+    .property-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      max-width: 1100px;
+      margin: 100px auto;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e0e0e0;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .left-side {
+      flex: 1;
+    }
+
+    .property-card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .no-image {
+      width: 100%;
+      height: 250px;
+      background-color: #f1f1f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #888;
+      border-radius: 8px;
+    }
+
+    .property-details {
+      margin-top: 20px;
+      color: #333;
+    }
+
+    .property-details h2 {
+      margin-top: 0;
+      font-size: 24px;
+    }
+
+    .property-details p {
+      margin: 10px 0;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #007b5e;
+    }
+
+    .furnished {
+      color: green;
+      font-weight: bold;
+    }
+
+    .unfurnished {
+      color: crimson;
+      font-weight: bold;
+    }
+
+    .book-btn, .favorite-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .favorite-btn.remove {
+      background-color: #dc3545;
+    }
+
+    .booking-status {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 5px;
+      color: #444;
+    }
+
+    .toggle-btn {
+      margin-top: 15px;
+      padding: 8px 15px;
+      background-color: #007b5e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .map-container {
+      flex: 1;
+      min-width: 400px;
+      height: 500px;
+      border-radius: 10px;
+    }
+
+    ul.messages {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0;
+    }
+
+    ul.messages li {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+
+    ul.messages li.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    ul.messages li.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  {% include "header.html" %}
+  {% include "sidebar.html" %}
+
+  <div class="property-card">
+
+    <!-- LEFT SIDE: image + details -->
+    <div class="left-side">
+      {% if property.image %}
+        <img src="{{ property.image.url }}" alt="{{ property.title }}">
+      {% else %}
+        <div class="no-image">No Image Available</div>
+      {% endif %}
+
+      <button type="button" class="toggle-btn" onclick="toggleDetails()">Show/Hide Details</button>
+
+      <div class="property-details" id="propertyDetails">
+        <h2>{{ property.title }}</h2>
+        <p><span class="highlight">Address:</span> {{ property.address }}</p>
+        <p><span class="highlight">Rent:</span> Rs. {{ property.monthly_rent }}</p>
+        <p>
+          <span class="highlight">Description:</span>
+          {{ property.bedrooms }} Bedroom |
+          {{ property.bathrooms }} Bathroom |
+          {% if property.furnished %}
+            <span class="furnished">Furnished</span>
+          {% else %}
+            <span class="unfurnished">Unfurnished</span>
+          {% endif %}
+        </p>
+
+        <!-- MESSAGES -->
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+              <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% if request.user.is_authenticated and request.user.profile.role == 'tenant' %}
+          {% if can_book %}
+            <form method="POST" action="{% url 'book_property' property.id %}">
+              {% csrf_token %}
+              <label for="note">Message to Landlord:</label>
+              <textarea name="note" rows="3" required placeholder="Write a message for the landlord..." style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;"></textarea>
+              <button type="submit" class="book-btn">Book Now</button>
+            </form>
+          {% else %}
+            {% if booking_status %}
+              <div class="booking-status" style="color: crimson; margin-top: 10px;">
+                {{ booking_status }}
+              </div>
+            {% endif %}
+          {% endif %}
+
+          {% if property.id in user_favorites %}
+            <form method="POST" action="{% url 'remove_from_favorites' property.id %}">
+              {% csrf_token %}
+              <button type="submit" class="favorite-btn remove">Remove from Favorites</button>
+            </form>
+          {% else %}
+            <form method="POST" action="{% url 'add_to_favorites' property.id %}">
+              {% csrf_token %}
+              <button type="submit" class="favorite-btn">Add to Favorites</button>
+            </form>
+          {% endif %}
+        {% endif %}
+
+        <!-- Show tenant's bookings and cancellation -->
+        {% for booking in property.bookings.all %}
+          {% if booking.tenant == request.user %}
+            <div class="booking-status">
+              Status: <strong>{{ booking.status }}</strong>
+              {% if booking.status == "Pending" %}
+                <form method="POST" action="{% url 'booking_cancel' booking.id %}" style="margin-top: 10px;">
+                  {% csrf_token %}
+                  <button type="submit" style="background-color: crimson; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                    Cancel Booking
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: MAP -->
+    <div id="map" class="map-container"></div>
+
+  </div>
+
+  <!-- JavaScript -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    function toggleDetails() {
+      const details = document.getElementById('propertyDetails');
+      details.style.display = (details.style.display === "none" || details.style.display === "") ? "block" : "none";
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var address = `{{ property.address|escapejs }}`;
+      if (address) {
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data && data.length > 0) {
+              var lat = data[0].lat;
+              var lon = data[0].lon;
+              var map = L.map('map').setView([lat, lon], 16);
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+              }).addTo(map);
+              L.marker([lat, lon]).addTo(map)
+                .bindPopup(address)
+                .openPopup();
+            } else {
+              document.getElementById('map').innerHTML = '<div style="color:#333;text-align:center;padding:40px;">Location not found for this address.</div>';
+            }
+          })
+          .catch(() => {
+            document.getElementById('map').innerHTML = '<div style="color:#333;text-align:center;padding:40px;">Unable to load map.</div>';
+          });
+      } else {
+        document.getElementById('map').innerHTML = '<div style="color:#333;text-align:center;padding:40px;">No address provided.</div>';
+      }
+    });
+  </script>
+</body>
+</html>

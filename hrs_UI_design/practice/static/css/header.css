@@ -1,0 +1,123 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing:border-box;
+  
+}
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;  
+  background: white;
+  z-index: 1000;
+}
+
+/* HEADER LAYOUT */
+.main-header
+{
+  display: flex;
+  justify-content: space-between;
+  align-items:center ;
+  padding: 1rem 2rem;
+  background-color: #222;
+  color:white;
+  gap: 1rem;
+}
+
+.logo
+{
+  
+  font-weight: bold;
+  font-size: 1.4rem;
+  flex:1;
+  word-spacing: 3px;
+}
+.logo a {
+  text-decoration: none;
+  color: white;
+  
+}
+/*nav-bar*/
+.nav-bar
+{
+  display: flex;
+  gap: 1.5rem;
+  
+}
+.nav-bar a{
+  text-decoration: none;
+  color: white;
+  padding: 0.5rem 0.5rem;
+  font-size: 1.3rem;
+}
+
+.active {
+  background-color: #3c82f6;
+  font-weight: bold;
+  border-radius: 7px;
+}
+.nav-bar a:hover
+{
+  color: green;
+}
+
+.menu-wrapper { 
+  position: relative; 
+}
+
+/*menu button */
+.menu-btn {
+  display: none; 
+}
+
+/* login-link*/
+.login-link {
+color: white;
+padding: 0.5rem 1rem;
+border-radius: 5px;
+text-decoration: none;
+font-size: 1.3rem;
+
+}
+a.login-link:hover{
+  color: green;
+}
+.logo,
+.nav-bar,
+.login-link {
+min-width: 0;
+}
+
+@media (max-width: 750px) {
+
+  .logo a{
+      font-size: 1.2rem;
+    }
+    .nav-bar {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left:5%;
+      background: #333;
+      flex-direction: column;
+      min-width: 90px;
+      z-index: 999;
+    }
+    .nav-bar.show {
+      display: flex;
+    }
+    .menu-btn{
+  background-color: #f1c27e;  /* bright orange background */
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  display: block;
+    }
+    .menu-btn:hover {
+      background-color: #e67e22; /* darker orange on hover */
+    }
+}

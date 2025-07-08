@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Houses Page</title>
+  <link rel="stylesheet" href="/static/css/sidebar.css">
+</head>
+<body>
+{% if user.is_authenticated %}
+  <div class="hamburger" id="hamburger">&#9776;</div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <ul>
+      <li><a href="{% url 'profile' %}"><span class="icon">👤</span><span class="label">Profile</span></a></li>
+
+      {% if user.profile and user.profile.role == 'landlord' %}
+        <li><a href="{% url 'add_property' %}"><span class="icon">➕</span><span class="label">Post Property</span></a></li>
+        <li><a href="{% url 'property_list' %}"><span class="icon">🏠</span><span class="label">My Listings</span></a></li>
+        <li><a href="{% url 'rental_requests' %}"><span class="icon">📩</span><span class="label">Rental Requests</span></a></li>
+
+      {% elif user.profile and user.profile.role == 'tenant' %}
+        
+        <li><a href="{% url 'favorite_list' %}"><span class="icon">⭐</span><span class="label">Favorites</span></a></li>
+        <li><a href="{% url 'my_rentals' %}"><span class="icon">📅</span><span class="label">My Rentals</span></a></li>
+      {% endif %}
+    </ul>
+  </aside>
+{% endif %}
+
+<script src="/static/script/sidebar.js"></script>
+</body>
+</html>

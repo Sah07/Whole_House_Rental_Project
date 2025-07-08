@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .otp-box {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .otp-box h2 {
+            margin-bottom: 20px;
+        }
+
+        .otp-box input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .otp-box button {
+            background-color: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .otp-box button:hover {
+            background-color: #1e40af;
+        }
+
+        .message {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            color: green;
+        }
+
+        .message.error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="otp-box">
+    <h2>Email Verification</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Retain entered email on validation failure -->
+        <input type="email" name="email" placeholder="Enter your email" value="{{ request.POST.email }}" required>
+        <input type="text" name="otp" placeholder="Enter OTP" required>
+        <button type="submit">Verify</button>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        {% endif %}
+    </form>
+</div>
+
+</body>
+</html>

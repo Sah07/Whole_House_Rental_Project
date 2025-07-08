@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Add Property{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/add_property.css' %}">
+{% endblock %}
+{% block content %}
+  {% if user.is_authenticated %}
+  <div class="form-container">
+    <h2>Post Your Property</h2>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% for field in form %}
+  {% if field.name != 'furnished' and field.name != 'is_available' %}
+    <p>
+      {% if field.name == 'image' and form.instance.pk and form.instance.image %}
+        <label>Current Image:</label><br>
+        <img src="{{ form.instance.image.url }}" alt="Current Image" style="max-width: 200px; margin-bottom: 10px; border: 1px solid #ccc;"><br>
+      {% endif %}
+
+      {{ field.label_tag }} {{ field }}
+      
+      {% if field.errors %}
+        <div style="color: red; font-size: 0.9em;">
+          {% for error in field.errors %}
+            {{ error }}<br>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </p>
+  {% endif %}
+{% endfor %}
+
+
+      <p>
+        <label class="checkbox-label">
+          {{ form.furnished }} Furnished
+        </label>
+        {% if form.furnished.errors %}
+          <div style="color: red; font-size: 0.9em;">
+            {% for error in form.furnished.errors %}
+              {{ error }}<br>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </p>
+
+      <p>
+        <label class="checkbox-label">
+          {{ form.is_available }} Available
+        </label>
+        {% if form.is_available.errors %}
+          <div style="color: red; font-size: 0.9em;">
+            {% for error in form.is_available.errors %}
+              {{ error }}<br>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </p>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  {% endif %}
+{% endblock %}
+

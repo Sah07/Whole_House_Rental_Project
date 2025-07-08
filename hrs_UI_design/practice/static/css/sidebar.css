@@ -1,0 +1,85 @@
+*
+{
+  font-family: "Open Sans", sans-serif;
+}
+.hamburger {
+    position: fixed;
+    top: 90px;
+    left: 10px;
+    font-size: 1.5rem;
+    z-index: 1001;
+    background: white;
+    padding: 6px 10px;        /* reduced padding */
+    border-radius: 8px;       /* smooth edges */
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15); /* softer shadow */
+    border: 1px solid #ccc;   /* thin outline (optional) */
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  
+  .hamburger:hover {
+    background-color: #3d566e;
+  }
+  
+  
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 60px;
+    height: calc(100vh - 60px);
+    background-color: black;
+    padding-top: 70px;
+    transition: width 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+  }
+  
+  .sidebar.open {
+    width: 220px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar li {
+    
+    padding: 0;
+    
+  }
+  .sidebar li a {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: white;
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+  
+  .sidebar li:hover {
+    background: #34495e;
+  }
+  
+  .icon {
+    font-size: 1.5rem;
+    margin-right: 10px;
+  }
+  
+  .label {
+    margin-left: 10px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  /* When sidebar is open, show labels */
+  .sidebar.open .label {
+    opacity: 1;
+  }
+  
+  
